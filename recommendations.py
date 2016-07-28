@@ -23,7 +23,9 @@ critics = {'Lisa Rose': {'Lady in the Water': 2.5, 'Snake on a Plane':3.5,
     'You, Me and Dupree': 1.0}}
 
 def sim_distance(prefs, person1, person2):
-    "欧几里德距离"
+    """
+    欧几里德距离
+    """
     si = {}
     for item in prefs[person1]:
         if item in prefs[person2]:
