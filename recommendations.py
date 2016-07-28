@@ -36,8 +36,9 @@ def sim_distance(prefs, person1, person2):
 
     return 1 / (1 + sqrt(sum_of_squares))
 
-person_name = critics.keys()
-pairs = [(i, j) for i in person_name for j in person_name if i != j]
+
+#person_name = critics.keys()
+pairs = [(i, j) for i in critics for j in critics if i != j]
 person_dis = {}
 for item in pairs:
     person_dis[item] = sim_distance(critics, *item)
