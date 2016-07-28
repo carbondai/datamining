@@ -2,26 +2,6 @@
 
 from math import sqrt
 
-critics = {'Lisa Rose': {'Lady in the Water': 2.5, 'Snake on a Plane':3.5, 
-    'Just My Luck':3.0, 'Superman Returns': 3.5, 'You, Me and Dupree': 2.5, 
-    'The Night Listener': 3.0},
-    'Gene Seymour': {'Lady in the Water': 3.0, 'Snake on a Plane':3.5, 
-    'Just My Luck':1.5, 'Superman Returns': 5.0, 'You, Me and Dupree': 3.5, 
-    'The Night Listener': 3.0},
-    'Michael Phillips': {'Lady in the Water': 2.5, 'Snake on a Plane':3.0, 
-    'Superman Returns': 3.5, 'The Night Listener': 4.0},
-    'Claudia Puig': {'Snake on a Plane':3.5, 'Just My Luck':3.0, 
-    'Superman Returns': 4.0, 'You, Me and Dupree': 2.5, 
-    'The Night Listener': 4.5},
-    'Mick LaSalle': {'Lady in the Water': 3.0, 'Snake on a Plane':4.0, 
-    'Just My Luck':2.0, 'Superman Returns': 3.0, 'You, Me and Dupree': 2.0, 
-    'The Night Listener': 3.0},
-    'Jack Matthews': {'Lady in the Water': 3.0, 'Snake on a Plane':4.0, 
-    'Superman Returns': 5.0, 'You, Me and Dupree': 3.5, 
-    'The Night Listener': 3.0},
-    'Toby': {'Snakes on a Plane':4.5, 'Superman Returns': 4.0, 
-    'You, Me and Dupree': 1.0}}
-
 
 def sim_distance(prefs, person1, person2):
     """
@@ -75,22 +55,48 @@ def sim_pearson(prefs, p1, p2):
     return round(r, 3)
 
 
-person_name = critics.keys()
-length = len(person_name)
-
-# 将一个列表中元素两两组成元组， 想想有没有更简洁的表达
-pairs = [(person_name[i], person_name[j]) for i in range(length) for j in range(length) if i < j]
-
-person_dis = {}
-for item in pairs:
-    person_dis[item] = sim_distance(critics, *item)
-
-sorted_person_dis = sorted(person_dis.items(), key=lambda x:x[1], reverse=True)
-print sorted_person_dis
+def topmatches(prefs, person, n=5, similarity = sim_pearson):
+    """
+    寻找与指定人员品味相近的人
+    """
+    scores = [(similarity(prefs, person, other), other) for other in prefs if other != person]
+    scores.sort()
+    scores.reverse()
+    return scores[0:n]
 
 
-pearson_dis = {}
-for item in pairs:
-    pearson_dis[item] = sim_pearson(critics, *item)
-sorted_pearson_dis = sorted(pearson_dis.items(), key=lambda x:x[1], reverse=True)
-print sorted_pearson_dis
+def pairs_sim(pref, similarity = sim_pearson):
+    """
+    给定的所有人员中两两相关度
+    author: daixin 2016-7-28
+    """
+    name = pref.keys()
+    length = len(name)
+    # 将一个列表中元素两两组成元组， 想想有没有更简洁的表达
+    pairs = [(name[i], name[j]) for i in range(length) for j in range(length) if i < j]
+    person_sim = {}
+    for item in pairs:
+        person_sim[item] = similarity(pref, *item)
+    sorted_person_sim = sorted(person_sim.items(), key=lambda x: x[1], reverse=True)
+    return sorted_person_sim
+
+
+critics = {'Lisa Rose': {'Lady in the Water': 2.5, 'Snake on a Plane':3.5,
+    'Just My Luck':3.0, 'Superman Returns': 3.5, 'You, Me and Dupree': 2.5,
+    'The Night Listener': 3.0},
+    'Gene Seymour': {'Lady in the Water': 3.0, 'Snake on a Plane':3.5,
+    'Just My Luck':1.5, 'Superman Returns': 5.0, 'You, Me and Dupree': 3.5,
+    'The Night Listener': 3.0},
+    'Michael Phillips': {'Lady in the Water': 2.5, 'Snake on a Plane':3.0,
+    'Superman Returns': 3.5, 'The Night Listener': 4.0},
+    'Claudia Puig': {'Snake on a Plane':3.5, 'Just My Luck':3.0,
+    'Superman Returns': 4.0, 'You, Me and Dupree': 2.5,
+    'The Night Listener': 4.5},
+    'Mick LaSalle': {'Lady in the Water': 3.0, 'Snake on a Plane':4.0,
+    'Just My Luck':2.0, 'Superman Returns': 3.0, 'You, Me and Dupree': 2.0,
+    'The Night Listener': 3.0},
+    'Jack Matthews': {'Lady in the Water': 3.0, 'Snake on a Plane':4.0,
+    'Superman Returns': 5.0, 'You, Me and Dupree': 3.5,
+    'The Night Listener': 3.0},
+    'Toby': {'Snakes on a Plane':4.5, 'Superman Returns': 4.0,
+    'You, Me and Dupree': 1.0}}
