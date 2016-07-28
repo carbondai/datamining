@@ -24,7 +24,7 @@ critics = {'Lisa Rose': {'Lady in the Water': 2.5, 'Snake on a Plane':3.5,
 
 def sim_distance(prefs, person1, person2):
     """
-    Å·¼¸ÀïµÂ¾àÀë
+    æ¬§å‡ é‡Œå¾·è·ç¦»
     """
     si = {}
     for item in prefs[person1]:
