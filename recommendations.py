@@ -135,4 +135,15 @@ def pairs_sim(pref, similarity=sim_pearson):
     return sorted_person_sim
 
 
+def transformPrefs(prefs):
+    """
+    将字典中人员与物品位置对换
+    """
+    result = {}
+    for person in prefs:
+        for item in prefs[person]:
+            result.setdefault(item, {})
 
+            # 将物品和人员对调
+            result[item][person] = prefs[person][item]
+    return result
