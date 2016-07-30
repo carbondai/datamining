@@ -22,6 +22,9 @@ critics = {'Lisa Rose': {'Lady in the Water': 2.5, 'Snake on a Plane':3.5,
     'Toby': {'Snake on a Plane':4.5, 'Superman Returns': 4.0,
     'You, Me and Dupree': 1.0}}
 
+customers = {'daixin': {'book': 4.5, 'phone': 4.8, 'ball': 3.5, 'food': 4.0},
+             'pds': {'milk': 4.0, 'book': 3.0, 'phone': 4.5, 'cloths': 3.5},
+             'lifeng': {'food': 3.5, 'shoes': 4.0, 'cloths': 4.5, 'phone': 4.0}}
 
 def sim_distance(prefs, person1, person2):
     """
@@ -38,7 +41,7 @@ def sim_distance(prefs, person1, person2):
     sum_of_squares = sum([pow(prefs[person1][item] - prefs[person2][item], 2)
         for item in prefs[person1] if item in prefs[person2]])
 
-    return round(1.0 / (1 + sqrt(sum_of_squares)), 6)
+    return 1 / (1 + sqrt(sum_of_squares))
 
 
 def sim_pearson(prefs, p1, p2):
@@ -73,7 +76,7 @@ def sim_pearson(prefs, p1, p2):
         return 0
     r = num / den
 
-    return round(r, 6)
+    return r
 
 
 def topmatches(prefs, person, n=6, similarity = sim_pearson):
@@ -112,7 +115,7 @@ def getRecommendations(prefs, person, similarity=sim_pearson):
                 simSums[item] += sim
 
     # 建立一个归一化的列表
-    rankings = [(round(total/simSums[item], 6), item) for item, total in totals.items()]
+    rankings = [(total/simSums[item], item) for item, total in totals.items()]
     # 返回经过排序的列表
     rankings.sort()
     rankings.reverse()
@@ -147,3 +150,51 @@ def transformPrefs(prefs):
             # 将物品和人员对调
             result[item][person] = prefs[person][item]
     return result
+
+
+def calculateSimilarItems(prefs, n=10):
+    """计算与所给物品最为相近的所有其他物品"""
+    result = {}
+
+    # 以物品为中心对偏好矩阵实行倒置处理
+    itemPrefs = transformPrefs(prefs)
+    c = 0
+    for item in itemPrefs:
+        # 针对大数据集更新状态变量
+        c += 1
+        if c % 100 == 0:
+            print "%d / %d" % (c, len(itemPrefs))
+        # 寻找最为相近的物品
+        scores = topmatches(itemPrefs, item, n=n, similarity=sim_distance)
+        result[item] = scores
+    return result
+
+
+def getRecommendedItems(prefs, itemMatch, user):
+    """获得推荐物品"""
+    userRatings = prefs[user]
+    scores = {}
+    totalSim = {}
+    # 循环遍历由当前用户评分的物品
+    for (item, rating) in userRatings.items():
+        # 循环遍历与当前物品相近的物品
+        for (similarity, item2) in itemMatch[item]:
+            # 忽略已做过评价的物品
+            if item2 in userRatings:
+                continue
+            # 评价值与相似度的加权之和
+            scores.setdefault(item2, 0)
+            scores[item2] += similarity*rating
+            # 全部相似度之和
+            totalSim.setdefault(item2, 0)
+            totalSim[item2] += similarity
+    # 将每个合计值除以加权和，求出平均值
+    rankings = [(score/totalSim[item], item) for item, score in scores.items()]
+
+    rankings.sort()
+    rankings.reverse()
+    return rankings
+
+
+itemsim=calculateSimilarItems(customers)
+print getRecommendedItems(customers, itemsim, 'daixin')
