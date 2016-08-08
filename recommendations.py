@@ -196,5 +196,20 @@ def getRecommendedItems(prefs, itemMatch, user):
     return rankings
 
 
-itemsim=calculateSimilarItems(customers)
-print getRecommendedItems(customers, itemsim, 'daixin')
+def loadMovieLens(path='./movielens'):
+    """获取真实数据集"""
+
+    # 获取影片标题
+    movies = {}
+    for line in open(path + '/movies.csv'):
+        (id, title) = line.split(',')[0:2]
+        movies[id] = title
+
+    # 加载数据
+    prefs = {}
+    for line in open(path + '/ratings.csv'):
+        (user, movieid, rating, ts) = line.split(',')
+        prefs.setdefault(user, {})
+        prefs[user][movies[movieid]] = float(rating)
+    return prefs
+
