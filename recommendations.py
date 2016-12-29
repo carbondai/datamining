@@ -79,6 +79,26 @@ def sim_pearson(prefs, p1, p2):
     return r
 
 
+def sim_tanimoto(prefs, p1, p2):
+    """
+    Tanimoto相似度算法
+    """
+    si = {}
+    for item in prefs[p1]:
+        if item in prefs[p2]:
+            si[item] = 1
+
+    if len(si) == 0:
+        return 0
+
+    sn = len(si)    #交集元素个数
+    tn = len(prefs[p1]) + len(prefs[p2]) - sn   #并集元素个数
+
+    r = float(sn) / tn
+
+    return r
+
+
 def topmatches(prefs, person, n=6, similarity = sim_pearson):
     """
     寻找与指定人员品味相近的人
@@ -213,3 +233,5 @@ def loadMovieLens(path='./movielens'):
         prefs[user][movies[movieid]] = float(rating)
     return prefs
 
+# if __name__ == "__main__":
+#     print sim_tanimoto(critics,'Jack Matthews', 'Mick LaSalle')
